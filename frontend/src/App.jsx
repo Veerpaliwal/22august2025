@@ -1,33 +1,80 @@
+
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import axios from "axios";
+import { BASE_URL } from './Helper/Helper';
+
 
 function App() {
-  const [count, setCount] = useState(0)
+  // hook variable
+  const [city, setCity] = useState('');
+  const [business, setBusiness] = useState('');
+  
+  let handleChange = (e)=>{
+    
+    const { name, value } = e.target;
+
+    if (name === 'city') {
+      setCity(value);
+    } else if (name === 'business') {
+      setBusiness(value);
+    }
+  
+  }
+
+  let getBusiness = () => {
+    console.log(city);
+    console.log(business);
+    window.location.href=`/${city}/search?q=${business}`
+  }
+
+  // let call the API
+  try {
+      axios.get(`${BASE_URL}/api/cities?populate=*&filters[businesses][business_name][$containsi]=${business}&filters[name][$containsi]=${city}`)
+    .then(function (response) {
+      // handle success
+      console.log(response);
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error);
+    })
+    .finally(function () {
+      // always executed
+    });
+    } catch (error) {
+      console.log(error)
+    }
+    
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <div className="container mt-5 ">
+      <div className="d-flex gap-3 justify-content-center ">
+        <input
+          type="text"
+          placeholder="Select location"
+          className="form-control"
+          style={{ width: '200px', marginRight: '10px' }} 
+            onChange={handleChange}
+            name='city'
+        />
+        <input
+          type="text"
+          placeholder="Search for anything"
+          className="form-control"
+          style={{ width: '200px' }} 
+            onChange={handleChange}
+            name='business'
+        />
+        </div>       
+       <div className="text-center">
+        <button type="button" onClick={getBusiness} className="btn btn-danger">Danger</button>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+
+    </div>
+  
+
     </>
   )
 }
